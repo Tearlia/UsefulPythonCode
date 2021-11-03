@@ -1,0 +1,97 @@
+# imports the necessary libraries 
+
+import numpy as np
+import pandas as pd
+
+# You will need to pip install the pycountry package if you have not used it before
+pip install pycountry-convert
+
+from pycountry_convert import country_alpha2_to_continent_code, country_name_to_country_alpha2
+
+df_vac = pd.read_csv('country_vaccinations.csv') # Change the file and file path to match your use
+df_vacman = pd.read_csv('country_vaccinations_by_manufacturer.csv')
+
+# View the first 5 observations of your datasets to make sure the information was retrieved properly
+df_vac.head()
+df_vacman.head()
+
+# Method to pull the continent names and match them with their corresponding countries and classift any "unkown" entries as just that
+def get_continent(col):
+    try:
+        cn_a2_code =  country_name_to_country_alpha2(col)
+    except:
+        cn_a2_code = 'Unknown' 
+    try:
+        cn_continent = country_alpha2_to_continent_code(cn_a2_code)
+    except:
+        cn_continent = 'Unknown'
+    return (cn_a2_code, cn_continent)
+ 
+#Below creates classifications for each country into the continent it belongs.  
+ 
+Africa = ('Algeria','Angola','Benin','Botswana','Burkina','Burundi','Cameroon','Cape Verde','Central African Republic','Chad','Comoros','Congo','Congo, Democratic Republic of','Djibouti','Egypt','Equatorial Guinea','Eritrea','Ethiopia','Gabon','Gambia','Ghana','Guinea','Guinea-Bissau','Ivory Coast','Kenya','Lesotho','Liberia','Libya','Madagascar','Malawi','Mali','Mauritania','Mauritius','Morocco','Mozambique','Namibia','Niger','Nigeria','Rwanda','Sao Tome and Principe','Senegal','Seychelles','Sierra Leone','Somalia','South Africa','South Sudan','Sudan','Swaziland','Tanzania','Togo','Tunisia','Uganda','Zambia','Zimbabwe')
+Asia = ('Afghanistan','Bahrain','Bangladesh','Bhutan','Brunei','Burma (Myanmar)','Cambodia','China','East Timor','India','Indonesia','Iran','Iraq','Israel','Japan','Jordan','Kazakhstan','Korea, North','Korea, South','Kuwait','Kyrgyzstan','Laos','Lebanon','Malaysia','Maldives','Mongolia','Nepal','Oman','Pakistan','Philippines','Qatar','Russian Federation','Saudi Arabia','Singapore','Sri Lanka','Syria','Tajikistan','Thailand','Turkey','Turkmenistan','United Arab Emirates','Uzbekistan','Vietnam','Yemen')
+Europe = ('Albania','Andorra','Armenia','Austria','Azerbaijan','Belarus','Belgium','Bosnia and Herzegovina','Bulgaria','Croatia','Cyprus','Czech Republic','Denmark','Estonia','Finland','France','Georgia','Germany','Greece','Hungary','Iceland','Ireland','Italy','Latvia','Liechtenstein','Lithuania','Luxembourg','Macedonia','Malta','Moldova','Monaco','Montenegro','Netherlands','Norway','Poland','Portugal','Romania','San Marino','Serbia','Slovakia','Slovenia','Spain','Sweden','Switzerland','Ukraine','United Kingdom','Vatican City')
+North_America = ('Antigua and Barbuda','Bahamas','Barbados','Belize','Canada','Costa Rica','Cuba','Dominica','Dominican Republic','El Salvador','Grenada','Guatemala','Haiti','Honduras','Jamaica','Mexico','Nicaragua','Panama','Saint Kitts and Nevis','Saint Lucia','Saint Vincent and the Grenadines','Trinidad and Tobago','United States')
+South_America = ('Argentina','Bolivia','Brazil','Chile','Colombia','Ecuador','Guyana','Paraguay','Peru','Suriname','Uruguay','Venezuela')
+Australia_Oceania = ('Australia','Fiji','Kiribati','Marshall Islands','Micronesia','Nauru','New Zealand','Palau','Papua New Guinea','Samoa','Solomon Islands','Tonga','Tuvalu','Vanuatu')
+
+# Declares variable "country" as the column country in our dataset
+country = df_vac['country']
+
+#This method creates a nested if statement that is making a new column and then classifying each country as its continent. For example:
+#                                                                                                                          ^If country in Africa = "Algeria" return "Africa"
+def GetConti(country):
+    if country in Africa:
+        return "Africa"
+    elif country in Asia:
+        return "Asia"
+    elif country in Europe:
+        return "Europe"
+    elif country in North_America:
+        return "North America"
+    elif country in South_America:
+        return "South America"
+    elif country in Australia_Oceania:
+        return "Australia/Oceania"
+    else:
+        return "Other"
+
+
+
+df_vac['Continent']=df_vac['country'].apply(GetConti) # Takes our new dataframe names Continent and applies it the country column in the original data frame 
+df_vac.to_csv('df_vac_continent', sep='\t') # Saves a new CSV file for use in other systems such as Tableau or PowerBI. 
+
+# Same Classifications but for the df_vacman dataset
+
+Africa = ('Algeria','Angola','Benin','Botswana','Burkina','Burundi','Cameroon','Cape Verde','Central African Republic','Chad','Comoros','Congo','Congo, Democratic Republic of','Djibouti','Egypt','Equatorial Guinea','Eritrea','Ethiopia','Gabon','Gambia','Ghana','Guinea','Guinea-Bissau','Ivory Coast','Kenya','Lesotho','Liberia','Libya','Madagascar','Malawi','Mali','Mauritania','Mauritius','Morocco','Mozambique','Namibia','Niger','Nigeria','Rwanda','Sao Tome and Principe','Senegal','Seychelles','Sierra Leone','Somalia','South Africa','South Sudan','Sudan','Swaziland','Tanzania','Togo','Tunisia','Uganda','Zambia','Zimbabwe')
+Asia = ('Afghanistan','Bahrain','Bangladesh','Bhutan','Brunei','Burma (Myanmar)','Cambodia','China','East Timor','India','Indonesia','Iran','Iraq','Israel','Japan','Jordan','Kazakhstan','Korea, North','Korea, South','Kuwait','Kyrgyzstan','Laos','Lebanon','Malaysia','Maldives','Mongolia','Nepal','Oman','Pakistan','Philippines','Qatar','Russian Federation','Saudi Arabia','Singapore','Sri Lanka','Syria','Tajikistan','Thailand','Turkey','Turkmenistan','United Arab Emirates','Uzbekistan','Vietnam','Yemen')
+Europe = ('Albania','Andorra','Armenia','Austria','Azerbaijan','Belarus','Belgium','Bosnia and Herzegovina','Bulgaria','Croatia','Cyprus','Czech Republic','Denmark','Estonia','Finland','France','Georgia','Germany','Greece','Hungary','Iceland','Ireland','Italy','Latvia','Liechtenstein','Lithuania','Luxembourg','Macedonia','Malta','Moldova','Monaco','Montenegro','Netherlands','Norway','Poland','Portugal','Romania','San Marino','Serbia','Slovakia','Slovenia','Spain','Sweden','Switzerland','Ukraine','United Kingdom','Vatican City')
+North_America = ('Antigua and Barbuda','Bahamas','Barbados','Belize','Canada','Costa Rica','Cuba','Dominica','Dominican Republic','El Salvador','Grenada','Guatemala','Haiti','Honduras','Jamaica','Mexico','Nicaragua','Panama','Saint Kitts and Nevis','Saint Lucia','Saint Vincent and the Grenadines','Trinidad and Tobago','United States')
+South_America = ('Argentina','Bolivia','Brazil','Chile','Colombia','Ecuador','Guyana','Paraguay','Peru','Suriname','Uruguay','Venezuela')
+Australia_Oceania = ('Australia','Fiji','Kiribati','Marshall Islands','Micronesia','Nauru','New Zealand','Palau','Papua New Guinea','Samoa','Solomon Islands','Tonga','Tuvalu','Vanuatu')
+
+country = df_vacman['location']
+
+#This method creates a nested if statement that is making a new column and then classifying each country as its continent. For example:
+#                                                                                                                          ^If country in Africa = "Algeria" return "Africa"
+def GetConti(country):
+    if country in Africa:
+        return "Africa"
+    elif country in Asia:
+        return "Asia"
+    elif country in Europe:
+        return "Europe"
+    elif country in North_America:
+        return "North America"
+    elif country in South_America:
+        return "South America"
+    elif country in Australia_Oceania:
+        return "Australia/Oceania"
+    else:
+        return "Other"
+
+
+
+df_vacman['Continent']=df_vacman['location'].apply(GetConti)# Takes our new dataframe names Continent and applies it the country column in the original data frame 
+df_vacman.to_csv('df_vacman_continent', sep='\t')# Saves a new CSV file for use in other systems such as Tableau or PowerBI. 
